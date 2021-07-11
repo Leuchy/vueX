@@ -2,8 +2,10 @@
   <div class="hello">
     <h1>{{ msg }}</h1>
     <h1>Current counter: {{$store.state.counter}}</h1>
+    <h1>times: {{$store.state.times}}</h1>
+    <h1>total (counter * times): {{$store.getters.total}}</h1>
     <button @click="$store.commit('add')">add counter</button>
-    <button @click="$store.dispatch('asyncAdd')">async add counter</button>
+    <button @click="$store.dispatch('asyncAddTimes')">async add times</button>
     <p>
       For a guide and recipes on how to configure / customize this project,
       <br />check out the

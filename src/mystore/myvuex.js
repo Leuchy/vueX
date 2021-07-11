@@ -17,6 +17,26 @@ class Store {
     this.commit = this.commit.bind(this);
     this.dispatch = this.dispatch.bind(this);
 
+    // @:利用Vue的computed属性实现getters中的计算
+    // Vue 的 computed 是不带参数的，因此需要对传入的getters做处理
+    this.getters = {};  // @:声明getters
+    const computed = {};  // @:声明要传入vue(this._vm)中的computed
+    const store = this; // @:暂存this
+    this._wrappedGetters = options.getters;
+    Object.keys(this._wrappedGetters).forEach(key=>{
+      const fn = store._wrappedGetters[key];
+      computed[key] = ()=>{
+        return fn(store.state);
+      }
+
+      // @:为getters添加对应的key
+      Object.defineProperty(store.getters, key, {
+        get(){
+          return store._vm[key] // @:computed中的key会被代理到store._vm上，所以直接返回即可
+        }
+      })
+    })
+
     // 1.暴露state属性, 对传入的state选项做响应式处理
     // Vue.util.defineReactive(this, 'state', this.$options.state);
 
@@ -34,7 +54,8 @@ class Store {
           // @:以$开头的key值, 做响应式时不会向vue实例上做代理(https://cn.vuejs.org/v2/api/#data)
           $$state: options.state,  
         }
-      }
+      },
+      computed
     });
   }
 
